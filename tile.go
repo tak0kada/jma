@@ -15,7 +15,7 @@ type Tile struct {
 	Y    uint `json:"tile_y" validate:"required"`
 }
 
-func (t *Tile) String() string {
+func (t Tile) String() string {
 	return fmt.Sprintf("{level: %d, x:%d, y: %d}", t.Zoom, t.X, t.Y)
 }
 

@@ -26,7 +26,7 @@ func TestTileIsValid(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.tile.IsValid(); got != tt.want {
-				t.Errorf("Tile=%s, result=%t, expected=%t", tt.tile.String(), got, tt.want)
+				t.Errorf("Tile=%s, result=%t, expected=%t", tt.tile, got, tt.want)
 			}
 		})
 	}
@@ -44,7 +44,7 @@ func TestTileToMapURL(t *testing.T) {
 	}
 	t.Run(test.name, func(t *testing.T) {
 		if got := test.tile.ToMapURL("pale", "png"); got != test.want {
-			t.Errorf("Tile=%s, result=%s, expected=%s", test.tile.String(), got, test.want)
+			t.Errorf("Tile=%s, result=%s, expected=%s", test.tile, got, test.want)
 		}
 	})
 }
@@ -61,7 +61,7 @@ func TestTileToBorderMapURL(t *testing.T) {
 	}
 	t.Run(test.name, func(t *testing.T) {
 		if got := test.tile.ToBorderMapURL("png"); got != test.want {
-			t.Errorf("Tile=%s, result=%s, expected=%s", test.tile.String(), got, test.want)
+			t.Errorf("Tile=%s, result=%s, expected=%s", test.tile, got, test.want)
 		}
 	})
 }
@@ -128,7 +128,7 @@ func TestTileToJmaURL(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got, err := tt.tile.ToJmaURL(tt.now, tt.duration, "png"); got != tt.want || err != nil && err.Error() != tt.err.Error() {
-				t.Errorf("Tile=%s, result=(%s, %s), expected=(%s, %s)", tt.tile.String(), got, err, tt.want, tt.err)
+				t.Errorf("Tile=%s, result=(%s, %s), expected=(%s, %s)", tt.tile, got, err, tt.want, tt.err)
 			}
 		})
 	}

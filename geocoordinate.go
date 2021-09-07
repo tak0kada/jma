@@ -10,7 +10,7 @@ type GeoCoordinate struct {
 	Lon float64 `validate:"required"`
 }
 
-func (g *GeoCoordinate) String() string {
+func (g GeoCoordinate) String() string {
 	return fmt.Sprintf("{lat: %f, lon:%f}", g.Lat, g.Lon)
 }
 
