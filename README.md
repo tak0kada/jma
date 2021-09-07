@@ -14,7 +14,7 @@ import (
 func main() {
 	now, _ := time.Parse(time.RFC3339, "2021-09-05T13:32:38Z")
 	t := jma.Tile{10, 899, 409}
-	err = jma.DownloadImage(t, jma.Rect{800, 800}, now, 0, "./example.png")
+	err = jma.DownloadImage(t, jma.Rect{600, 800}, now, 0, "./example.png")
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
