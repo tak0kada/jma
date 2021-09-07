@@ -77,19 +77,19 @@ func FetchImageTile(tile Tile, now time.Time, duration time.Duration) (image.Ima
 		return nil, err
 	}
 
-	url, err = tile.ToJmaURL(now, duration, "png")
-	weather, err := fetchImage(url) // downlaod weather map
-	if err != nil {
-		return nil, err
-	}
-
 	url = tile.ToBorderMapURL("png")
 	border, err := fetchImage(url) // download prefectural border map
 	if err != nil {
 		return nil, err
 	}
 
-	return overlay(decolor(base), weather, border), nil
+	url, err = tile.ToJmaURL(now, duration, "png")
+	weather, err := fetchImage(url) // downlaod weather map
+	if err != nil {
+		return nil, err
+	}
+
+	return overlay(decolor(base), border, weather), nil
 }
 
 func overlay(bottom image.Image, middle image.Image, top image.Image) image.Image {
