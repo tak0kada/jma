@@ -2,6 +2,7 @@ package jma
 
 import (
 	"bytes"
+	"errors"
 	"github.com/disintegration/imaging"
 	"image"
 	"image/color"
@@ -11,27 +12,90 @@ import (
 )
 
 func FetchImage(tile Tile, rect Rect, now time.Time, duration time.Duration) (image.Image, error) {
+	base, err := FetchMapImage(tile, rect, "pale")
+	if err != nil {
+		return nil, err
+	}
+	border, err := FetchBorderImage(tile, rect)
+	if err != nil {
+		return nil, err
+	}
+	weather, err := FetchJmaImage(tile, rect, now, duration)
+	if err != nil {
+		return nil, err
+	}
+	img, _ := Overlay(decolor(base), border, weather)
+	return img, nil
+}
+
+func FetchImageTile(tile Tile, now time.Time, duration time.Duration) (image.Image, error) {
+	return FetchImage(tile, Rect{256, 256}, now, duration)
+}
+
+func FetchMapImage(tile Tile, rect Rect, datatype string) (image.Image, error) {
 	tiles := initTiles(tile, rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
 		imgs[h] = make([]image.Image, len(tiles[0]))
 	}
-
-	var err error
 	for h := range imgs {
 		for w := range imgs[h] {
-			imgs[h][w], err = FetchImageTile(tiles[h][w], now, duration)
+			url := tiles[h][w].ToMapURL(datatype, "png")
+			base, err := fetchImage(url) // download base map
 			if err != nil {
 				return nil, err
 			}
+			imgs[h][w] = base
 		}
 	}
-
-	img := concatImages(imgs)
+	img := ConcatImages(imgs)
 	return imaging.CropCenter(img, int(rect.W), int(rect.H)), nil
 }
 
-func concatImages(imgs [][]image.Image) image.Image {
+func FetchBorderImage(tile Tile, rect Rect) (image.Image, error) {
+	tiles := initTiles(tile, rect)
+	imgs := make([][]image.Image, len(tiles))
+	for h := range imgs {
+		imgs[h] = make([]image.Image, len(tiles[0]))
+	}
+	for h := range imgs {
+		for w := range imgs[h] {
+			url := tiles[h][w].ToBorderMapURL("png")
+			border, err := fetchImage(url) // download prefectural border map
+			if err != nil {
+				return nil, err
+			}
+			imgs[h][w] = border
+		}
+	}
+	img := ConcatImages(imgs)
+	return imaging.CropCenter(img, int(rect.W), int(rect.H)), nil
+}
+
+func FetchJmaImage(tile Tile, rect Rect, now time.Time, duration time.Duration) (image.Image, error) {
+	tiles := initTiles(tile, rect)
+	imgs := make([][]image.Image, len(tiles))
+	for h := range imgs {
+		imgs[h] = make([]image.Image, len(tiles[0]))
+	}
+	for h := range imgs {
+		for w := range imgs[h] {
+			url, err := tiles[h][w].ToJmaURL(now, duration, "png")
+			if err != nil {
+				return nil, err
+			}
+			weather, err := fetchImage(url) // downlaod weather map
+			if err != nil {
+				return nil, err
+			}
+			imgs[h][w] = weather
+		}
+	}
+	img := ConcatImages(imgs)
+	return imaging.CropCenter(img, int(rect.W), int(rect.H)), nil
+}
+
+func ConcatImages(imgs [][]image.Image) image.Image {
 	nh := len(imgs)
 	nw := len(imgs[0])
 	dst := imaging.New(256*nh, 256*nw, color.RGBA{0, 0, 0, 0})
@@ -70,34 +134,19 @@ func calcCanvasSize(rect Rect) (uint, uint) {
 	return w, h
 }
 
-func FetchImageTile(tile Tile, now time.Time, duration time.Duration) (image.Image, error) {
-	url := tile.ToMapURL("pale", "png")
-	base, err := fetchImage(url) // download base map
-	if err != nil {
-		return nil, err
+func Overlay(bottom image.Image, middle image.Image, top image.Image) (image.Image, error) {
+	eqsize := func(left image.Image, right image.Image) bool {
+		return left.Bounds().Dx() == right.Bounds().Dx() && left.Bounds().Dy() == right.Bounds().Dy()
 	}
-
-	url = tile.ToBorderMapURL("png")
-	border, err := fetchImage(url) // download prefectural border map
-	if err != nil {
-		return nil, err
+	if !(eqsize(bottom, middle) && eqsize(middle, top)) {
+		return nil, errors.New("error: size of input images are not consistent")
 	}
-
-	url, err = tile.ToJmaURL(now, duration, "png")
-	weather, err := fetchImage(url) // downlaod weather map
-	if err != nil {
-		return nil, err
-	}
-
-	return overlay(decolor(base), border, weather), nil
-}
-
-func overlay(bottom image.Image, middle image.Image, top image.Image) image.Image {
-	dst := imaging.New(256, 256, color.RGBA{0, 0, 0, 0})
+	opacity := 1.0
+	dst := imaging.New(top.Bounds().Dx(), top.Bounds().Dy(), color.RGBA{0, 0, 0, 0})
 	dst = imaging.Paste(dst, bottom, image.Pt(0, 0))
-	dst = imaging.OverlayCenter(dst, middle, 1.0)
-	dst = imaging.OverlayCenter(dst, top, 1.0)
-	return dst
+	dst = imaging.OverlayCenter(dst, middle, opacity)
+	dst = imaging.OverlayCenter(dst, top, opacity)
+	return dst, nil
 }
 
 func decolor(img image.Image) image.Image {
