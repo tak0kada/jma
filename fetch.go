@@ -16,15 +16,15 @@ func FetchImage(tile Tile, rect Rect, now time.Time, duration time.Duration) (im
 	if err != nil {
 		return nil, err
 	}
-	border, err := FetchBorderImage(tile, rect)
-	if err != nil {
-		return nil, err
-	}
 	weather, err := FetchJmaImage(tile, rect, now, duration)
 	if err != nil {
 		return nil, err
 	}
-	img, _ := Overlay(decolor(base), border, weather)
+	border, err := FetchBorderImage(tile, rect)
+	if err != nil {
+		return nil, err
+	}
+	img, _ := Overlay(decolor(base), weather, border)
 	return img, nil
 }
 
