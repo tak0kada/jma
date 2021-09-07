@@ -10,25 +10,25 @@ import (
 
 // For the definition of Tile struct, see: https://maps.gsi.go.jp/development/siyou.html#siyou-url .
 type Tile struct {
-	Level uint `validate:"gte=0,lte=18,required"`
-	X     uint `json:"tile_x" validate:"required"`
-	Y     uint `json:"tile_y" validate:"required"`
+	Zoom uint `validate:"gte=0,lte=18,required"`
+	X    uint `json:"tile_x" validate:"required"`
+	Y    uint `json:"tile_y" validate:"required"`
 }
 
 func (t *Tile) String() string {
-	return fmt.Sprintf("{level: %d, x:%d, y: %d}", t.Level, t.X, t.Y)
+	return fmt.Sprintf("{level: %d, x:%d, y: %d}", t.Zoom, t.X, t.Y)
 }
 
 // Geospatial Information Authority(国土地理院)
 func (t *Tile) ToMapURL(datatype string, ext string) string {
 	// For the valid pattern, see: https://maps.gsi.go.jp/development/ichiran.html.
 	return fmt.Sprintf("https://www.jma.go.jp/tile/gsi/%s/%d/%d/%d."+ext,
-		datatype, t.Level, t.X, t.Y)
+		datatype, t.Zoom, t.X, t.Y)
 }
 
 func (t *Tile) ToBorderMapURL(ext string) string {
 	return fmt.Sprintf("https://www.jma.go.jp/bosai/jmatile/data/map/none/none/none/surf/mask/%d/%d/%d."+ext,
-		t.Level, t.X, t.Y)
+		t.Zoom, t.X, t.Y)
 }
 
 // Japan Meteorological Agency(気象庁)
@@ -58,10 +58,10 @@ func (t *Tile) toJmaLowresURL(now time.Time, duration time.Duration, ext string)
 	}
 	if duration <= 0 {
 		return fmt.Sprintf("https://www.jma.go.jp/bosai/jmatile/data/rasrf/%s/none/%s/surf/rasrf/%d/%d/%d.png",
-			formatTime(after), formatTime(after), t.Level, t.X, t.Y)
+			formatTime(after), formatTime(after), t.Zoom, t.X, t.Y)
 	} else {
 		return fmt.Sprintf("https://www.jma.go.jp/bosai/jmatile/data/rasrf/%s/none/%s/surf/rasrf/%d/%d/%d.png",
-			formatTime(now), formatTime(after), t.Level, t.X, t.Y)
+			formatTime(now), formatTime(after), t.Zoom, t.X, t.Y)
 	}
 }
 
@@ -77,10 +77,10 @@ func (t *Tile) toJmaHighresURL(now time.Time, duration time.Duration, ext string
 	}
 	if duration <= 0 {
 		return fmt.Sprintf("https://www.jma.go.jp/bosai/jmatile/data/nowc/%s/none/%s/surf/hrpns/%d/%d/%d.png",
-			formatTime(after), formatTime(after), t.Level, t.X, t.Y)
+			formatTime(after), formatTime(after), t.Zoom, t.X, t.Y)
 	} else {
 		return fmt.Sprintf("https://www.jma.go.jp/bosai/jmatile/data/nowc/%s/none/%s/surf/hrpns/%d/%d/%d.png",
-			formatTime(now), formatTime(after), t.Level, t.X, t.Y)
+			formatTime(now), formatTime(after), t.Zoom, t.X, t.Y)
 	}
 }
 
@@ -95,10 +95,10 @@ func (t *Tile) IsValid() bool {
 
 func tileXYValidation(sl validator.StructLevel) {
 	tile := sl.Current().Interface().(Tile)
-	if tile.X >= uint(math.Pow(2, float64(tile.Level))) {
+	if tile.X >= uint(math.Pow(2, float64(tile.Zoom))) {
 		sl.ReportError(tile.X, "tile_x", "X", "x_should_be_less_than_2^level", "")
 	}
-	if tile.Y >= uint(math.Pow(2, float64(tile.Level))) {
+	if tile.Y >= uint(math.Pow(2, float64(tile.Zoom))) {
 		sl.ReportError(tile.Y, "tile_y", "Y", "y_should_be_less_than_2^level", "")
 	}
 }

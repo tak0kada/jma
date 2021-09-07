@@ -37,8 +37,8 @@ func (g *GeoCoordinate) ToTile(zoom uint) Tile {
 	r := math.Pi / 180
 	lat := g.Lat * r
 	return Tile{
-		Level: zoom,
-		X:     uint((g.Lon + 180) / 360 * n),
-		Y:     uint((1.0 - math.Log(math.Tan(lat)+1/math.Cos(lat))/math.Pi) / 2 * n),
+		Zoom: zoom,
+		X:    uint((g.Lon + 180) / 360 * n),
+		Y:    uint((1.0 - math.Log(math.Tan(lat)+1/math.Cos(lat))/math.Pi) / 2 * n),
 	}
 }
