@@ -6,6 +6,10 @@ import (
 )
 
 func TestTileCoordinateToGeoCoordinate(t *testing.T) {
+	isApproxEq := func(left GeoCoordinate, right GeoCoordinate) bool {
+		return math.Abs(left.Lat-right.Lat)+math.Abs(left.Lon-right.Lon) < 1e-10
+	}
+
 	tests := []struct {
 		name string
 		geoc GeoCoordinate
@@ -29,8 +33,4 @@ func TestTileCoordinateToGeoCoordinate(t *testing.T) {
 			}
 		})
 	}
-}
-
-func isApproxEq(left GeoCoordinate, right GeoCoordinate) bool {
-	return math.Abs(left.Lat-right.Lat)+math.Abs(left.Lon-right.Lon) < 1e-10
 }
