@@ -38,6 +38,20 @@ func CropImage(img image.Image, center TileCoordinate, rect Rect) image.Image {
 	return imaging.CropCenter(img, int(rect.W), int(rect.H))
 }
 
+func CalcCorner(tc TileCoordinate, height float64, width float64) (TileCoordinate, TileCoordinate) {
+	min := TileCoordinate{
+		Zoom: tc.Zoom,
+		X:    tc.X - width/2,
+		Y:    tc.Y - height/2,
+	}
+	max := TileCoordinate{
+		Zoom: tc.Zoom,
+		X:    tc.X + width/2,
+		Y:    tc.Y + height/2,
+	}
+	return min, max
+}
+
 func Decolor(img image.Image) image.Image {
 	return imaging.Grayscale(img)
 }

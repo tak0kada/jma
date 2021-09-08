@@ -3,6 +3,7 @@ package jma
 import (
 	"github.com/tak0kada/jma/internal"
 	"image"
+	"math"
 	"time"
 )
 
@@ -26,15 +27,15 @@ func FetchImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, duration 
 func FetchImageTile(tile Tile, now time.Time, duration time.Duration) (image.Image, error) {
 	tc := TileCoordinate{
 		Zoom: tile.Zoom,
-		X:    float64(tile.X),
-		Y:    float64(tile.Y),
+		X:    float64(tile.X) + 0.5,
+		Y:    float64(tile.Y) + 0.5,
 	}
 	return FetchImage(tc.ToGeoCoordinate(), tc.Zoom, Rect{256, 256}, now, duration)
 }
 
 func FetchMapImage(gc GeoCoordinate, zoom uint, rect Rect, datatype string) (image.Image, error) {
 	tc := gc.GetTileCoordinate(zoom)
-	tiles := initTiles(tc, rect)
+	tiles := makeTiles(tc, rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
 		imgs[h] = make([]image.Image, len(tiles[0]))
@@ -55,7 +56,7 @@ func FetchMapImage(gc GeoCoordinate, zoom uint, rect Rect, datatype string) (ima
 
 func FetchBorderImage(gc GeoCoordinate, zoom uint, rect Rect) (image.Image, error) {
 	tc := gc.GetTileCoordinate(zoom)
-	tiles := initTiles(tc, rect)
+	tiles := makeTiles(tc, rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
 		imgs[h] = make([]image.Image, len(tiles[0]))
@@ -76,7 +77,7 @@ func FetchBorderImage(gc GeoCoordinate, zoom uint, rect Rect) (image.Image, erro
 
 func FetchJmaImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, duration time.Duration) (image.Image, error) {
 	tc := gc.GetTileCoordinate(zoom)
-	tiles := initTiles(tc, rect)
+	tiles := makeTiles(tc, rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
 		imgs[h] = make([]image.Image, len(tiles[0]))
@@ -98,30 +99,37 @@ func FetchJmaImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, durati
 	return CropImage(img, tc, rect), nil
 }
 
-func initTiles(tc TileCoordinate, rect Rect) [][]Tile {
-	tile := tc.GetTile()
-	nw, nh := calcCanvasSize(tc, rect)
+func makeTiles(tc TileCoordinate, rect Rect) [][]Tile {
+	m, M := CalcCorner(tc, float64(rect.H)/256, float64(rect.H)/256)
+	min := m.GetTile()
+	max := M.GetTile()
+	nh, nw := calcCanvasSize(tc, min, max)
 	tiles := make([][]Tile, nh)
 	for h := range tiles {
 		tiles[h] = make([]Tile, nw)
 		for w := range tiles[h] {
-			tiles[h][w] = Tile{tile.Zoom, tile.X - (nw-1)/2 + uint(w), tile.Y - (nh-1)/2 + uint(h)}
+			tiles[h][w] = Tile{tc.Zoom, min.X + uint(w), min.Y + uint(h)}
 		}
 	}
 	return tiles
 }
 
-func calcCanvasSize(tc TileCoordinate, rect Rect) (uint, uint) {
-	var w, h uint
-	if rect.W/2-128 > 0 {
-		w = 2*((rect.W/2-128)/256+1) + 1
+func calcCanvasSize(tc TileCoordinate, min Tile, max Tile) (int, int) {
+	var nh, nw int
+	if isApproxEq(math.Mod(tc.Y, 1), 0.5) {
+		nh = int(max.Y - min.Y)
 	} else {
-		w = 1
+		nh = int(max.Y - min.Y + 1)
 	}
-	if rect.H/2-128 > 0 {
-		h = 2*((rect.H/2-128)/256+1) + 1
+	if isApproxEq(math.Mod(tc.X, 1), 0.5) {
+		nw = int(max.X - min.X)
 	} else {
-		h = 1
+		nw = int(max.X - min.X + 1)
 	}
-	return w, h
+	return nh, nw
+}
+
+func isApproxEq(x float64, y float64) bool {
+	eps := 1e-5
+	return math.Abs(x-y) < eps
 }
