@@ -14,7 +14,7 @@ func (g GeoCoordinate) String() string {
 	return fmt.Sprintf("{lat: %f, lon:%f}", g.Lat, g.Lon)
 }
 
-func (g *GeoCoordinate) IsValid() bool {
+func (g GeoCoordinate) IsValid() bool {
 	err := validate.Struct(g)
 	if err != nil {
 		// fmt.Printf("Err(s):\n%+v\n", err)
@@ -23,7 +23,7 @@ func (g *GeoCoordinate) IsValid() bool {
 	return true
 }
 
-func (g *GeoCoordinate) Normalize() GeoCoordinate {
+func (g GeoCoordinate) Normalize() GeoCoordinate {
 	latmax := 85.0511287798
 	return GeoCoordinate{
 		Lat: math.Max(math.Min(g.Lat, latmax), -latmax),
@@ -31,7 +31,7 @@ func (g *GeoCoordinate) Normalize() GeoCoordinate {
 	}
 }
 
-func (g *GeoCoordinate) ToTile(zoom uint) Tile {
+func (g GeoCoordinate) ToTile(zoom uint) Tile {
 	// reference for conversion formula: https://sorabatake.jp/7325/
 	n := math.Pow(2, float64(zoom))
 	r := math.Pi / 180

@@ -20,19 +20,19 @@ func (t Tile) String() string {
 }
 
 // Geospatial Information Authority(国土地理院)
-func (t *Tile) ToMapURL(datatype string, ext string) string {
+func (t Tile) ToMapURL(datatype string, ext string) string {
 	// For the valid pattern, see: https://maps.gsi.go.jp/development/ichiran.html.
 	return fmt.Sprintf("https://www.jma.go.jp/tile/gsi/%s/%d/%d/%d."+ext,
 		datatype, t.Zoom, t.X, t.Y)
 }
 
-func (t *Tile) ToBorderMapURL(ext string) string {
+func (t Tile) ToBorderMapURL(ext string) string {
 	return fmt.Sprintf("https://www.jma.go.jp/bosai/jmatile/data/map/none/none/none/surf/mask/%d/%d/%d."+ext,
 		t.Zoom, t.X, t.Y)
 }
 
 // Japan Meteorological Agency(気象庁)
-func (t *Tile) ToJmaURL(now time.Time, duration time.Duration, ext string) (string, error) {
+func (t Tile) ToJmaURL(now time.Time, duration time.Duration, ext string) (string, error) {
 	if -3*time.Hour < duration && duration < time.Hour {
 		return t.toJmaHighresURL(now, duration, ext), nil
 	} else if -12*time.Hour < duration && duration < 15*time.Hour {
@@ -46,7 +46,7 @@ func formatTime(time time.Time) string {
 	return time.UTC().Format("20060102150405")
 }
 
-func (t *Tile) toJmaLowresURL(now time.Time, duration time.Duration, ext string) string {
+func (t Tile) toJmaLowresURL(now time.Time, duration time.Duration, ext string) string {
 	var after time.Time
 	round := now.Round(time.Hour)
 	if round.Before(now) {
@@ -65,7 +65,7 @@ func (t *Tile) toJmaLowresURL(now time.Time, duration time.Duration, ext string)
 	}
 }
 
-func (t *Tile) toJmaHighresURL(now time.Time, duration time.Duration, ext string) string {
+func (t Tile) toJmaHighresURL(now time.Time, duration time.Duration, ext string) string {
 	var after time.Time
 	round := now.Round(5 * time.Minute)
 	if round.Before(now) {
@@ -84,7 +84,7 @@ func (t *Tile) toJmaHighresURL(now time.Time, duration time.Duration, ext string
 	}
 }
 
-func (t *Tile) IsValid() bool {
+func (t Tile) IsValid() bool {
 	err := validate.Struct(t)
 	if err != nil {
 		// fmt.Printf("Err(s):\n%+v\n", err)
