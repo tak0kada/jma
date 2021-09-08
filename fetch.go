@@ -33,7 +33,8 @@ func FetchImageTile(tile Tile, now time.Time, duration time.Duration) (image.Ima
 }
 
 func FetchMapImage(gc GeoCoordinate, zoom uint, rect Rect, datatype string) (image.Image, error) {
-	tiles := initTiles(gc.ToTile(zoom), rect)
+	tc := gc.ToTileCoordinate(zoom)
+	tiles := initTiles(tc, rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
 		imgs[h] = make([]image.Image, len(tiles[0]))
@@ -49,12 +50,12 @@ func FetchMapImage(gc GeoCoordinate, zoom uint, rect Rect, datatype string) (ima
 		}
 	}
 	img := ConcatImages(imgs)
-	tc := gc.ToTileCoordinate(zoom)
 	return CropImage(img, tc, rect), nil
 }
 
 func FetchBorderImage(gc GeoCoordinate, zoom uint, rect Rect) (image.Image, error) {
-	tiles := initTiles(gc.ToTile(zoom), rect)
+	tc := gc.ToTileCoordinate(zoom)
+	tiles := initTiles(tc, rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
 		imgs[h] = make([]image.Image, len(tiles[0]))
@@ -70,12 +71,12 @@ func FetchBorderImage(gc GeoCoordinate, zoom uint, rect Rect) (image.Image, erro
 		}
 	}
 	img := ConcatImages(imgs)
-	tc := gc.ToTileCoordinate(zoom)
 	return CropImage(img, tc, rect), nil
 }
 
 func FetchJmaImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, duration time.Duration) (image.Image, error) {
-	tiles := initTiles(gc.ToTile(zoom), rect)
+	tc := gc.ToTileCoordinate(zoom)
+	tiles := initTiles(tc, rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
 		imgs[h] = make([]image.Image, len(tiles[0]))
@@ -94,12 +95,12 @@ func FetchJmaImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, durati
 		}
 	}
 	img := ConcatImages(imgs)
-	tc := gc.ToTileCoordinate(zoom)
 	return CropImage(img, tc, rect), nil
 }
 
-func initTiles(tile Tile, rect Rect) [][]Tile {
-	nw, nh := calcCanvasSize(rect)
+func initTiles(tc TileCoordinate, rect Rect) [][]Tile {
+	tile := tc.ToTile()
+	nw, nh := calcCanvasSize(tc, rect)
 	tiles := make([][]Tile, nh)
 	for h := range tiles {
 		tiles[h] = make([]Tile, nw)
@@ -110,7 +111,7 @@ func initTiles(tile Tile, rect Rect) [][]Tile {
 	return tiles
 }
 
-func calcCanvasSize(rect Rect) (uint, uint) {
+func calcCanvasSize(tc TileCoordinate, rect Rect) (uint, uint) {
 	var w, h uint
 	if rect.W/2-128 > 0 {
 		w = 2*((rect.W/2-128)/256+1) + 1
