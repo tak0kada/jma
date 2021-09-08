@@ -34,7 +34,7 @@ func Overlay(bottom image.Image, middle image.Image, top image.Image) (image.Ima
 	return dst, nil
 }
 
-func ClipImage(img image.Image, tc TileCoordinate, rect Rect) image.Image {
+func CropImage(img image.Image, center TileCoordinate, rect Rect) image.Image {
 	return imaging.CropCenter(img, int(rect.W), int(rect.H))
 }
 

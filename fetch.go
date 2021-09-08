@@ -50,7 +50,7 @@ func FetchMapImage(gc GeoCoordinate, zoom uint, rect Rect, datatype string) (ima
 	}
 	img := ConcatImages(imgs)
 	tc := gc.ToTileCoordinate(zoom)
-	return ClipImage(img, tc, rect), nil
+	return CropImage(img, tc, rect), nil
 }
 
 func FetchBorderImage(gc GeoCoordinate, zoom uint, rect Rect) (image.Image, error) {
@@ -71,7 +71,7 @@ func FetchBorderImage(gc GeoCoordinate, zoom uint, rect Rect) (image.Image, erro
 	}
 	img := ConcatImages(imgs)
 	tc := gc.ToTileCoordinate(zoom)
-	return ClipImage(img, tc, rect), nil
+	return CropImage(img, tc, rect), nil
 }
 
 func FetchJmaImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, duration time.Duration) (image.Image, error) {
@@ -95,7 +95,7 @@ func FetchJmaImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, durati
 	}
 	img := ConcatImages(imgs)
 	tc := gc.ToTileCoordinate(zoom)
-	return ClipImage(img, tc, rect), nil
+	return CropImage(img, tc, rect), nil
 }
 
 func initTiles(tile Tile, rect Rect) [][]Tile {
