@@ -16,10 +16,10 @@ func main() {
 		fmt.Println("invalid geocoordinate %s. normalizing...")
 		g = g.Normalize()
 	}
-	fmt.Printf("GeoCoordinate: %s\n", g)
+	fmt.Printf("GeoCoordinate: %s\n", g) // => GeoCoordinate: {lat: 33.737131, lon:137.226929}
 
 	t := g.GetTile(zoom)
-	fmt.Printf("Tile: %s\n", t)
+	fmt.Printf("Tile: %s\n", t) // => Tile: {level: 8, x:225, y: 102}
 
 	err := jma.DownloadImageTile(t, now, 0, "./tile.png")
 	if err != nil {
