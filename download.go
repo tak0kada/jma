@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-func DownloadImage(tile Tile, rect Rect, now time.Time, duration time.Duration, filepath string) error {
-	img, err := FetchImage(tile, rect, now, duration)
+func DownloadImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, duration time.Duration, filepath string) error {
+	img, err := FetchImage(gc, zoom, rect, now, duration)
 	if err != nil {
 		return err
 	}

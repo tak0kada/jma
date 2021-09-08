@@ -11,16 +11,16 @@ import (
 	"time"
 )
 
-func FetchImage(tile Tile, rect Rect, now time.Time, duration time.Duration) (image.Image, error) {
-	base, err := FetchMapImage(tile, rect, "pale")
+func FetchImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, duration time.Duration) (image.Image, error) {
+	base, err := FetchMapImage(gc, zoom, rect, "pale")
 	if err != nil {
 		return nil, err
 	}
-	weather, err := FetchJmaImage(tile, rect, now, duration)
+	weather, err := FetchJmaImage(gc, zoom, rect, now, duration)
 	if err != nil {
 		return nil, err
 	}
-	border, err := FetchBorderImage(tile, rect)
+	border, err := FetchBorderImage(gc, zoom, rect)
 	if err != nil {
 		return nil, err
 	}
@@ -29,11 +29,16 @@ func FetchImage(tile Tile, rect Rect, now time.Time, duration time.Duration) (im
 }
 
 func FetchImageTile(tile Tile, now time.Time, duration time.Duration) (image.Image, error) {
-	return FetchImage(tile, Rect{256, 256}, now, duration)
+	tc := TileCoordinate{
+		Zoom: tile.Zoom,
+		X:    float64(tile.X),
+		Y:    float64(tile.Y),
+	}
+	return FetchImage(tc.ToGeoCoordinate(), tc.Zoom, Rect{256, 256}, now, duration)
 }
 
-func FetchMapImage(tile Tile, rect Rect, datatype string) (image.Image, error) {
-	tiles := initTiles(tile, rect)
+func FetchMapImage(gc GeoCoordinate, zoom uint, rect Rect, datatype string) (image.Image, error) {
+	tiles := initTiles(gc.ToTile(zoom), rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
 		imgs[h] = make([]image.Image, len(tiles[0]))
@@ -52,8 +57,8 @@ func FetchMapImage(tile Tile, rect Rect, datatype string) (image.Image, error) {
 	return imaging.CropCenter(img, int(rect.W), int(rect.H)), nil
 }
 
-func FetchBorderImage(tile Tile, rect Rect) (image.Image, error) {
-	tiles := initTiles(tile, rect)
+func FetchBorderImage(gc GeoCoordinate, zoom uint, rect Rect) (image.Image, error) {
+	tiles := initTiles(gc.ToTile(zoom), rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
 		imgs[h] = make([]image.Image, len(tiles[0]))
@@ -72,8 +77,8 @@ func FetchBorderImage(tile Tile, rect Rect) (image.Image, error) {
 	return imaging.CropCenter(img, int(rect.W), int(rect.H)), nil
 }
 
-func FetchJmaImage(tile Tile, rect Rect, now time.Time, duration time.Duration) (image.Image, error) {
-	tiles := initTiles(tile, rect)
+func FetchJmaImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, duration time.Duration) (image.Image, error) {
+	tiles := initTiles(gc.ToTile(zoom), rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
 		imgs[h] = make([]image.Image, len(tiles[0]))
