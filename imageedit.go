@@ -60,6 +60,9 @@ func CalcCorner(tc TileCoordinate, height float64, width float64) (TileCoordinat
 	return min, max
 }
 
-func Decolor(img image.Image) image.Image {
+func background(img image.Image) image.Image {
+	img = imaging.AdjustBrightness(img, -25)
+	img = imaging.AdjustContrast(img, -30)
+	img = imaging.Blur(img, 0.5)
 	return imaging.Grayscale(img)
 }

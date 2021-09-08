@@ -20,7 +20,7 @@ func FetchImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, duration 
 	if err != nil {
 		return nil, err
 	}
-	img, _ := Overlay(Decolor(base), weather, border)
+	img, _ := Overlay(background(base), weather, border)
 	return img, nil
 }
 
