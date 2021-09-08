@@ -39,3 +39,8 @@ func main() {
 * example.png
 
 ![example image downloaded from jma.go.jp](./example.png)
+
+# Reference
+* [高解像度降水ナウキャスト](https://www.jma.go.jp/bosai/nowc)
+* [降水ナウキャスト](https://www.jma.go.jp/bosai/kaikotan)
+* [地理院タイル](https://maps.gsi.go.jp/development/ichiran.html)
