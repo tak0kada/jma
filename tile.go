@@ -16,7 +16,7 @@ type Tile struct {
 }
 
 func (t Tile) String() string {
-	return fmt.Sprintf("{level: %d, x:%d, y: %d}", t.Zoom, t.X, t.Y)
+	return fmt.Sprintf("{Level: %d, X: %d, Y: %d}", t.Zoom, t.X, t.Y)
 }
 
 // Geospatial Information Authority(国土地理院)

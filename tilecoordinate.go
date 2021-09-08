@@ -13,7 +13,7 @@ type TileCoordinate struct {
 }
 
 func (tc TileCoordinate) String() string {
-	return fmt.Sprintf("{level: %d, x:%g, y: %g}", tc.Zoom, tc.X, tc.Y)
+	return fmt.Sprintf("{Level: %d, X: %g, Y: %g}", tc.Zoom, tc.X, tc.Y)
 }
 
 func (tc TileCoordinate) GetTile() Tile {

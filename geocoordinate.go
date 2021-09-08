@@ -11,7 +11,7 @@ type GeoCoordinate struct {
 }
 
 func (g GeoCoordinate) String() string {
-	return fmt.Sprintf("{lat: %f, lon:%f}", g.Lat, g.Lon)
+	return fmt.Sprintf("{Lat: %f, Lon: %f}", g.Lat, g.Lon)
 }
 
 func (g GeoCoordinate) IsValid() bool {
