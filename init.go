@@ -8,4 +8,5 @@ var validate *validator.Validate = validator.New()
 
 func init() {
 	validate.RegisterStructValidation(tileXYValidation, Tile{})
+	validate.RegisterStructValidation(tileCoordinateXYValidation, TileCoordinate{})
 }

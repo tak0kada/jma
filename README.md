@@ -44,3 +44,4 @@ func main() {
 * [高解像度降水ナウキャスト](https://www.jma.go.jp/bosai/nowc)
 * [降水ナウキャスト](https://www.jma.go.jp/bosai/kaikotan)
 * [地理院タイル](https://maps.gsi.go.jp/development/ichiran.html)
+* [タイルマップで緯度経度からタイルを求める](https://standardization.at.webry.info/201401/article_1.html): conversion formula between geocoordinate and tile

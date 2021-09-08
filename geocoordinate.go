@@ -42,3 +42,15 @@ func (g GeoCoordinate) ToTile(zoom uint) Tile {
 		Y:    uint((1.0 - math.Log(math.Tan(math.Pi/4+lat/2))/math.Pi) / 2 * n),
 	}
 }
+
+func (g GeoCoordinate) ToTileCoordinate(zoom uint) TileCoordinate {
+	// reference for conversion formula: https://sorabatake.jp/7325/
+	n := math.Pow(2, float64(zoom))
+	r := math.Pi / 180
+	lat := g.Lat * r
+	return TileCoordinate{
+		Zoom: zoom,
+		X:    (g.Lon + 180) / 360 * n,
+		Y:    (1.0 - math.Log(math.Tan(math.Pi/4+lat/2))/math.Pi) / 2 * n,
+	}
+}
