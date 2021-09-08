@@ -32,13 +32,13 @@ func (g GeoCoordinate) Normalize() GeoCoordinate {
 }
 
 func (g GeoCoordinate) ToTile(zoom uint) Tile {
-	// reference for conversion formula: https://sorabatake.jp/7325/
+	// reference for conversion formula: https://standardization.at.webry.info/201401/article_1.html
 	n := math.Pow(2, float64(zoom))
 	r := math.Pi / 180
 	lat := g.Lat * r
 	return Tile{
 		Zoom: zoom,
 		X:    uint((g.Lon + 180) / 360 * n),
-		Y:    uint((1.0 - math.Log(math.Tan(lat)+1/math.Cos(lat))/math.Pi) / 2 * n),
+		Y:    uint((1.0 - math.Log(math.Tan(math.Pi/4+lat/2))/math.Pi) / 2 * n),
 	}
 }
