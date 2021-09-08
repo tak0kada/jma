@@ -35,7 +35,15 @@ func Overlay(bottom image.Image, middle image.Image, top image.Image) (image.Ima
 }
 
 func CropImage(img image.Image, center TileCoordinate, rect Rect) image.Image {
-	return imaging.CropCenter(img, int(rect.W), int(rect.H))
+	m, _ := CalcCorner(center, float64(rect.H)/256, float64(rect.H)/256)
+	lu := m.GetTile() // leftupper corner
+	cx := 256 * (int(m.X) - int(lu.X))
+	cy := 256 * (int(m.Y) - int(lu.Y))
+	region := image.Rectangle{
+		Min: image.Point{cx, cy},
+		Max: image.Point{cx + int(rect.W), cy + int(rect.H)},
+	}
+	return imaging.Crop(img, region)
 }
 
 func CalcCorner(tc TileCoordinate, height float64, width float64) (TileCoordinate, TileCoordinate) {
