@@ -104,7 +104,7 @@ func initTiles(tile Tile, rect Rect) [][]Tile {
 	for h := range tiles {
 		tiles[h] = make([]Tile, nw)
 		for w := range tiles[h] {
-			tiles[h][w] = Tile{tile.Zoom, tile.X - (nh-1)/2 + uint(h), tile.Y - (nw-1)/2 + uint(w)}
+			tiles[h][w] = Tile{tile.Zoom, tile.X - (nw-1)/2 + uint(w), tile.Y - (nh-1)/2 + uint(h)}
 		}
 	}
 	return tiles

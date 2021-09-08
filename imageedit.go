@@ -10,10 +10,10 @@ import (
 func ConcatImages(imgs [][]image.Image) image.Image {
 	nh := len(imgs)
 	nw := len(imgs[0])
-	dst := imaging.New(256*nh, 256*nw, color.RGBA{0, 0, 0, 0})
+	dst := imaging.New(256*nw, 256*nh, color.RGBA{0, 0, 0, 0})
 	for h := range imgs {
 		for w := range imgs[h] {
-			dst = imaging.Paste(dst, imgs[h][w], image.Pt(256*h, 256*w))
+			dst = imaging.Paste(dst, imgs[h][w], image.Pt(256*w, 256*h))
 		}
 	}
 	return dst

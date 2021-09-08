@@ -1,6 +1,6 @@
 package jma
 
 type Rect struct {
-	H uint
-	W uint
+	H uint // pixels
+	W uint // pixels
 }
