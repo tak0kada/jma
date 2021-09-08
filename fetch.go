@@ -1,13 +1,11 @@
 package jma
 
 import (
-	"bytes"
 	"errors"
 	"github.com/disintegration/imaging"
+	"github.com/tak0kada/jma/internal"
 	"image"
 	"image/color"
-	"io"
-	"net/http"
 	"time"
 )
 
@@ -46,7 +44,7 @@ func FetchMapImage(gc GeoCoordinate, zoom uint, rect Rect, datatype string) (ima
 	for h := range imgs {
 		for w := range imgs[h] {
 			url := tiles[h][w].ToMapURL(datatype, "png")
-			base, err := fetchImage(url) // download base map
+			base, err := internal.FetchImage(url) // download base map
 			if err != nil {
 				return nil, err
 			}
@@ -66,7 +64,7 @@ func FetchBorderImage(gc GeoCoordinate, zoom uint, rect Rect) (image.Image, erro
 	for h := range imgs {
 		for w := range imgs[h] {
 			url := tiles[h][w].ToBorderMapURL("png")
-			border, err := fetchImage(url) // download prefectural border map
+			border, err := internal.FetchImage(url) // download prefectural border map
 			if err != nil {
 				return nil, err
 			}
@@ -89,7 +87,7 @@ func FetchJmaImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, durati
 			if err != nil {
 				return nil, err
 			}
-			weather, err := fetchImage(url) // downlaod weather map
+			weather, err := internal.FetchImage(url) // downlaod weather map
 			if err != nil {
 				return nil, err
 			}
@@ -156,37 +154,4 @@ func Overlay(bottom image.Image, middle image.Image, top image.Image) (image.Ima
 
 func decolor(img image.Image) image.Image {
 	return imaging.Grayscale(img)
-}
-
-func fetchImage(url string) (image.Image, error) {
-	reader, err := fetchImageReader(url)
-	if err != nil {
-		return nil, err
-	}
-	img, _, err := image.Decode(reader)
-	if err != nil {
-		return nil, err
-	}
-	return img, err
-}
-
-func fetchImageReader(url string) (io.Reader, error) {
-	data, err := fetchImageByte(url)
-	if err != nil {
-		return nil, err
-	}
-	return bytes.NewReader(data), nil
-}
-
-func fetchImageByte(url string) ([]byte, error) {
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
 }
