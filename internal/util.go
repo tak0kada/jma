@@ -5,6 +5,7 @@ import (
 	"image"
 	"io"
 	"net/http"
+	"os"
 )
 
 func FetchImage(url string) (image.Image, error) {
@@ -38,4 +39,24 @@ func FetchImageByte(url string) ([]byte, error) {
 		return nil, err
 	}
 	return data, nil
+}
+
+func DownloadImage(url string, filepath string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	fp, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer fp.Close()
+
+	_, err = io.Copy(fp, resp.Body)
+	if err != nil {
+		return err
+	}
+	return nil
 }
