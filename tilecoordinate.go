@@ -16,7 +16,7 @@ func (tc TileCoordinate) String() string {
 	return fmt.Sprintf("{level: %d, x:%g, y: %g}", tc.Zoom, tc.X, tc.Y)
 }
 
-func (tc TileCoordinate) ToTile() Tile {
+func (tc TileCoordinate) GetTile() Tile {
 	return Tile{
 		Zoom: tc.Zoom,
 		X:    uint(tc.X),

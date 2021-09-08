@@ -24,7 +24,7 @@ func TestTileCoordinateToGeoCoordinate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.geoc.ToTileCoordinate(tt.zoom).ToGeoCoordinate(); !isApproxEq(tt.geoc, got) {
+			if got := tt.geoc.GetTileCoordinate(tt.zoom).ToGeoCoordinate(); !isApproxEq(tt.geoc, got) {
 				t.Errorf("Geocoordinate=%s, expected=%s", tt.geoc, got)
 			}
 		})

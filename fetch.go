@@ -33,7 +33,7 @@ func FetchImageTile(tile Tile, now time.Time, duration time.Duration) (image.Ima
 }
 
 func FetchMapImage(gc GeoCoordinate, zoom uint, rect Rect, datatype string) (image.Image, error) {
-	tc := gc.ToTileCoordinate(zoom)
+	tc := gc.GetTileCoordinate(zoom)
 	tiles := initTiles(tc, rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
@@ -54,7 +54,7 @@ func FetchMapImage(gc GeoCoordinate, zoom uint, rect Rect, datatype string) (ima
 }
 
 func FetchBorderImage(gc GeoCoordinate, zoom uint, rect Rect) (image.Image, error) {
-	tc := gc.ToTileCoordinate(zoom)
+	tc := gc.GetTileCoordinate(zoom)
 	tiles := initTiles(tc, rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
@@ -75,7 +75,7 @@ func FetchBorderImage(gc GeoCoordinate, zoom uint, rect Rect) (image.Image, erro
 }
 
 func FetchJmaImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, duration time.Duration) (image.Image, error) {
-	tc := gc.ToTileCoordinate(zoom)
+	tc := gc.GetTileCoordinate(zoom)
 	tiles := initTiles(tc, rect)
 	imgs := make([][]image.Image, len(tiles))
 	for h := range imgs {
@@ -99,7 +99,7 @@ func FetchJmaImage(gc GeoCoordinate, zoom uint, rect Rect, now time.Time, durati
 }
 
 func initTiles(tc TileCoordinate, rect Rect) [][]Tile {
-	tile := tc.ToTile()
+	tile := tc.GetTile()
 	nw, nh := calcCanvasSize(tc, rect)
 	tiles := make([][]Tile, nh)
 	for h := range tiles {

@@ -18,7 +18,7 @@ func main() {
 	}
 	fmt.Printf("GeoCoordinate: %s\n", g)
 
-	t := g.ToTile(zoom)
+	t := g.GetTile(zoom)
 	fmt.Printf("Tile: %s\n", t)
 
 	err := jma.DownloadImageTile(t, now, 0, "./tile.png")
