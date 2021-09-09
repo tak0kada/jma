@@ -44,7 +44,7 @@ func (g GeoCoordinate) GetTile(zoom uint) Tile {
 }
 
 func (g GeoCoordinate) GetTileCoordinate(zoom uint) TileCoordinate {
-	// reference for conversion formula: https://sorabatake.jp/7325/
+	// reference for conversion formula: https://standardization.at.webry.info/201401/article_1.html
 	n := math.Pow(2, float64(zoom))
 	r := math.Pi / 180
 	lat := g.Lat * r
